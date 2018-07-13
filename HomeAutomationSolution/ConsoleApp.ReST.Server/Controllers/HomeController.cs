@@ -10,11 +10,11 @@ using Newtonsoft.Json.Converters;
 // Add these usings:
 using System.Web.Http;
 using System.Net.Http;
-using ConsoleApp.ReST.Server.Models;
+using AutomationAPI.Models;
 using System.IO;
 using System.Net;
 
-namespace ConsoleApp.ReST.Server.Controllers
+namespace AutomationAPI.Controllers
 {
     /// <summary>
     /// Author: ASHISH MATHUR

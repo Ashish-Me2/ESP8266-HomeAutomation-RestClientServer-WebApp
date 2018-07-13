@@ -3,7 +3,7 @@ using Microsoft.Owin.StaticFiles;
 using Owin;
 using System.Web.Http;
 
-namespace ConsoleApp.ReST.Server
+namespace AutomationAPI
 {
     public class Startup
     {

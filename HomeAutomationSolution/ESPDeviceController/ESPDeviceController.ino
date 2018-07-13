@@ -4,18 +4,59 @@
 #include <ESP8266HTTPClient.h>
 
 
-const char *ssid = "ZOMBIE"; 
-const char *password = "CHANTI1-BANTI2";
+const char *ssid = "ASHISH-MATHUR"; 
+const char *password = "sdl123456";
+int reconnectDelay = 1000; //AM: Use this to implement a circuit breaker for no connectivity to Wifi or the HTTP endpoint
+int noDataCounter = 0;
+bool stopRetries = false;
+String AzureAPIUri = "http://homeautomationapi.azurewebsites.net/";
 
-const char *host = "http://chanti-banti:8080/api/home/GetRoomDeviceStatus?RoomName=Living%20Room";
+void ControlGPIO(String stateString) {
+	//Segments of device's state data, tokenized on COMMA
+	int device1 = stateString.indexOf(",");
+	int device2 = stateString.indexOf(",", device1+1);
+	int device3 = stateString.indexOf(",", device2 + 1);
+
+	//Segments of device's name & state data, tokenized on =
+	String dev1Segment = stateString.substring(0, device1);
+	Serial.print("Dev1Segment:");
+	Serial.println(dev1Segment);
+	
+	String dev2Segment = stateString.substring(device2 + 1, device3);
+	Serial.println(dev2Segment);
+	String dev3Segment = stateString.substring(device3+1, stateString.length());
+	Serial.println(dev3Segment);
+	
+	//Now pick device name and state
+	String dev1Name = dev1Segment.substring(0, dev1Segment.indexOf("="));
+	String dev1State = dev1Segment.substring(dev1Segment.indexOf("=")+1, dev1Segment.length());
+	Serial.print("Dev1N:");
+	Serial.println(dev1Name);
+	Serial.print("Dev1S:");
+	Serial.println(dev1State);
+
+
+
+	String dev2Name = dev2Segment.substring(0, dev2Segment.indexOf("=") - 1);
+	String dev2State = dev2Segment.substring(dev2Segment.indexOf("=") + 1, dev2Segment.length() - 1);
+	
+	String dev3Name = dev3Segment.substring(0, dev3Segment.indexOf("=") - 1);
+	String dev3State = dev3Segment.substring(dev3Segment.indexOf("=") + 1, dev3Segment.length() - 1);
+
+
+}
 
 void setup() {
 	delay(1000);
+	pinMode(0, OUTPUT); //TUBE CONTROL
+	pinMode(2, OUTPUT); //BULB CONTROL
+
 	Serial.begin(115200);
 	WiFi.mode(WIFI_OFF);        //Prevents reconnection issue (taking too long to connect)
 	delay(1000);
-	WiFi.mode(WIFI_STA);        
-
+	WiFi.mode(WIFI_AP_STA);        
+	Serial.print("Device MAC address: ");
+	Serial.println(WiFi.macAddress());  //MAC address of ESP
 	WiFi.begin(ssid, password);
 	Serial.println("");
 	Serial.print("Connecting");
@@ -30,21 +71,50 @@ void setup() {
 	Serial.print("Connected to ");
 	Serial.println(ssid);
 	Serial.print("IP address: ");
-	Serial.println(WiFi.localIP());  //IP address assigned to your ESP
+	Serial.println(WiFi.localIP());  //IP address assigned to ESP
 }
 
 void loop() {
 	HTTPClient http;
 	String Link;
-	//GET Data
-	Link = "http://chanti-banti:8080/api/home/GetRoomDeviceStatus?RoomName=Living%20Room";
+	String roomName = "Living%20Room";
+	String apiPath = "api/home/GetRoomDeviceStatus?RoomName=";
+	
+	Link = AzureAPIUri + apiPath + roomName;
+
+	//----------------------------------------------------------------------------------------------------
+	if (noDataCounter > 15) {
+		if (!stopRetries) {
+			Serial.println("**************************************");
+			Serial.println("I'm tired of retrying. Please fix the server side and reset the processor (ESP) before trying again. No more automatic retries. Zzzzz");
+			Serial.println("**************************************");
+			stopRetries = true;
+		}
+		return;
+	}
+	//----------------------------------------------------------------------------------------------------
 	http.begin(Link);     
 	int httpCode = http.GET();           
-	String payload = http.getString();   
-	Serial.print("HTTP Status Code: ");   
-	Serial.println(httpCode);
-	Serial.print("HTTP Response Payload: ");
-	Serial.println(payload);    
-	http.end();
-	delay(1000);
+	if (httpCode > 0) {
+		noDataCounter = 0;
+		reconnectDelay = 3000;
+		String payload = http.getString();
+		Serial.print("HTTP Status Code: ");
+		Serial.println(httpCode);
+		Serial.print("HTTP Response Payload: ");
+		Serial.println(payload);
+		http.end();
+		String trimmedPayload = payload.substring(1,payload.length()-1);
+		ControlGPIO(trimmedPayload);
+		delay(reconnectDelay);
+	}
+	else {
+		Serial.println("-----------------------------------");
+		Serial.print("No connection to server. Waiting for: ");
+		Serial.print(reconnectDelay/1000);
+		Serial.println(" seconds before re-trying...");
+		noDataCounter++;
+		reconnectDelay = reconnectDelay * 2;
+		delay(reconnectDelay);
+	}
 }
