@@ -79,15 +79,16 @@ namespace HomeAutomationAPI.Controllers
             return deviceStatus;
         }
 
-        [System.Web.Mvc.HttpPost]
-        public HttpResponseMessage SetDeviceState([FromUriAttribute] string DeviceName, [FromUriAttribute] string RoomName, [FromUriAttribute] int NewState)
+        [System.Web.Mvc.HttpGet]
+        public Room GetUpdatedDeviceState([FromUri] string DeviceName, [FromUri] string RoomName, [FromUri] int NewState)
         {
             HttpResponseMessage response = null;
+            Room _room = null;
             try
             {
                 //Implicit refresh states
                 GetAllDeviceStatus();
-                Room _room = myHome.Rooms.Find(r => r.RoomID.Equals(RoomName, StringComparison.CurrentCultureIgnoreCase));
+                _room = myHome.Rooms.Find(r => r.RoomID.Equals(RoomName, StringComparison.CurrentCultureIgnoreCase));
                 Device _device = _room.Devices.Find(d => d.DeviceID.Equals(DeviceName, StringComparison.CurrentCultureIgnoreCase));
                 _device.DeviceState = NewState;
                 SaveState();
@@ -97,7 +98,7 @@ namespace HomeAutomationAPI.Controllers
             {
                 response = new HttpResponseMessage(HttpStatusCode.NotModified);
             }
-            return response;
+            return _room;
         }
 
         /// <summary>
