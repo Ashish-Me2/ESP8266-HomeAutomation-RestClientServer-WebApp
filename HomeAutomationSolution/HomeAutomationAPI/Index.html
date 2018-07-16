@@ -3,37 +3,47 @@
 <head>
     <meta charset="utf-8" />
     <title>AM Home Automation Control</title>
+    <meta name="viewport" content="width=100, initial-scale=1">
+    <script src="Scripts/jquery-3.3.1.min.js"></script>
     <style>
-        body{
-            font-family:Arial;
-            font-size:10pt;
+        body {
+            font-family: Arial;
+            font-size: 10pt;
         }
+
         .home {
             color: black;
             font-weight: 700;
+            font-size: 18pt;
             margin: 4px 4px 4px 4px;
         }
+
         .room {
             color: brown;
             font-weight: 700;
         }
+
         .bulb {
-            color:goldenrod;
-            font-weight: 700;
-        }
-        .tube {
-            color:cornflowerblue;
-            font-weight: 700;
-        }
-        .fan {
-            color:darkgreen;
-            font-weight: 700;
-        }
-        .bulb-on {
-            background-color:khaki;
             color: goldenrod;
             font-weight: 700;
         }
+
+        .tube {
+            color: cornflowerblue;
+            font-weight: 700;
+        }
+
+        .fan {
+            color: darkgreen;
+            font-weight: 700;
+        }
+
+        .bulb-on {
+            background-color: khaki;
+            color: goldenrod;
+            font-weight: 700;
+        }
+
         .tube-on {
             background-color: cyan;
             color: cornflowerblue;
@@ -45,20 +55,48 @@
             color: darkgreen;
             font-weight: 700;
         }
+
         td {
             text-align: right;
         }
     </style>
+    <script name="cboFastBikes">
+        //jQuery.support.cors = true;
+        $(document).ready(function () {
+            
+            $.ajax(
+                {
+                    type: "GET",
+                    url: 'http://localhost/homeautomation/api/home/GetAllDEviceStatus',
+                    data: "",
+                    contentType: "application/json;",
+                    dataType: "json",
+                    success: function (data) {
+                        alert(data.msg);
+                        //alert(data);
+                    },
+                    error: function (msg, url, line) {
+                        alert("Error");
+                    }
+                });
+        });
+    </script>
 </head>
 <body>
-    <table style="width:15%;border-style:dotted;">
-        <tr><td colspan="3"><span class="home">Ashish's Home</span></td></tr>
-        <tr><td><span class="room">Drawing Room</span></td><td><span class="bulb">Bulb</span></td><td><span class="tube">Tubelight</span></td><td><span class="fan">Fan</span></td></tr>
-        <tr><td><span class="room">Living Room</span></td><td><span class="bulb">Bulb</span></td><td><span class="tube">Tubelight</span></td><td><span class="fan">Fan</span></td></tr>
-        <tr><td><span class="room">Kids' Room</span></td><td><span class="bulb">Bulb</span></td><td><span class="tube">Tubelight</span></td><td><span class="fan">Fan</span></td></tr>
-        <tr><td><span class="room">Master BedRoom</span></td><td><span class="bulb">Bulb</span></td><td><span class="tube">Tubelight</span></td><td><span class="fan">Fan</span></td></tr>
-        <tr><td><span class="room">Study Room</span></td><td><span class="bulb">Bulb</span></td><td><span class="tube">Tubelight</span></td><td><span class="fan">Fan</span></td></tr>
-        <tr><td><span class="room">Kitchen</span></td><td><span class="bulb">Bulb</span></td><td><span class="tube">Tubelight</span></td><td><span class="fan">Fan</span></td></tr>
+    <table style="border:solid;width:300px;">
+        <tr><td colspan="4" style="text-align:center"><span class="home">Ashish's Home</span></td></tr>
+        <tr><td colspan="4" style="text-align:center"><span class="home"><p id="dtm"></p></span></td></tr>
+        <tr><td><span class="room">Drawing Room</span></td><td><span class="bulb"><button id="B1" onclick="Click(this);" type="button">Bulb</button></span></td><td><span class="tube"><button id="T1" onclick="Click(this);" type="button">Tubelight</button></span></td><td><span class="fan"><button id="F1" onclick="Click(this);" type="button">Fan</button></span></td></tr>
+        
+        <tr><td><span class="room">Living Room</span></td><td><span class="bulb"><button id="B2" onclick="Click(this);" type="button">Bulb</button></span></td><td><span class="tube"><button id="T2" onclick="Click(this);" type="button">Tubelight</button></span></td><td><span class="fan"><button id="F2" onclick="Click(this);" type="button">Fan</button></span></td></tr>
+        
+        <tr><td><span class="room">Kids' Room</span></td><td><span class="bulb"><button id="B3" onclick="Click(this);" type="button">Bulb</button></span></td><td><span class="tube"><button id="T3" onclick="Click(this);" type="button">Tubelight</button></span></td><td><span class="fan"><button id="F3" onclick="Click(this);" type="button">Fan</button></span></td></tr>
+        
+        <tr><td><span class="room">Master BedRoom</span></td><td><span class="bulb"><button id="B4" onclick="Click(this);" type="button">Bulb</button></span></td><td><span class="tube"><button id="T4" onclick="Click(this);" type="button">Tubelight</button></span></td><td><span class="fan"><button id="F4" onclick="Click(this);" type="button">Fan</button></span></td></tr>
+        
+        <tr><td><span class="room">Study Room</span></td><td><span class="bulb"><button id="B5" onclick="Click(this);" type="button">Bulb</button></span></td><td><span class="tube"><button id="T5" onclick="Click(this);" type="button">Tubelight</button></span></td><td><span class="fan"><button id="F5" onclick="Click(this);" type="button">Fan</button></span></td></tr>
+        
+        <tr><td><span class="room">Kitchen</span></td><td><span class="bulb"><button id="B6" onclick="Click(this);" type="button">Bulb</button></span></td><td><span class="tube"><button id="T6" onclick="Click(this);" type="button">Tubelight</button></span></td><td><span class="fan"><button id="F6" onclick="Click(this);" type="button">Fan</button></span></td></tr>
     </table>
 </body>
 </html>

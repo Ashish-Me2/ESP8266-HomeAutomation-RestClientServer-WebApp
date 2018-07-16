@@ -8,10 +8,12 @@ using System.Net;
 using System.Net.Http;
 using System.Web;
 using System.Web.Http;
+using System.Web.Http.Cors;
 using System.Web.Mvc;
 
 namespace HomeAutomationAPI.Controllers
 {
+    [EnableCors(origins: "*", headers: "*", methods: "*")]
     public class HomeController : ApiController
     {
         private static Home myHome = null;

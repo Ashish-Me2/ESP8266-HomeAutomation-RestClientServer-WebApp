@@ -13,7 +13,7 @@ int reconnectDelay = 1000; //AM: Use this to implement a circuit breaker for no 
 int noDataCounter = 0;
 bool stopRetries = false;
 String AzureAPIUri = "http://homeautomationapi.azurewebsites.net/";
-uint8 const TUBELIGHT = 0;
+uint8 const <button id="T1" onclick="Click(this);" type="button">Tubelight</button> = 0;
 uint8 const BULB = 2;
 
 
@@ -39,7 +39,7 @@ void ControlGPIO(String stateString) {
 	String dev3Name = dev3Segment.substring(0, dev3Segment.indexOf("="));
 	String dev3State = dev3Segment.substring(dev3Segment.indexOf("=") + 1, dev3Segment.length());
 
-	digitalWrite(TUBELIGHT, dev1State == "ON" ? HIGH : LOW);
+	digitalWrite(<button id="T1" onclick="Click(this);" type="button">Tubelight</button>, dev1State == "ON" ? HIGH : LOW);
 	digitalWrite(BULB, dev3State == "ON" ? HIGH : LOW);
 }
 
