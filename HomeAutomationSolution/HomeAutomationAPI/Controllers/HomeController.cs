@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Web;
 using System.Web.Http;
 using System.Web.Http.Cors;
@@ -105,6 +106,7 @@ namespace HomeAutomationAPI.Controllers
             {
                 controlData = System.IO.File.ReadAllText(ControlFileName);
                 myHome = JsonConvert.DeserializeObject<Home>(controlData);
+                controlData = FormatHomeData(myHome);
             }
             catch (Exception exp)
             {
@@ -159,6 +161,35 @@ namespace HomeAutomationAPI.Controllers
                 response = new HttpResponseMessage(HttpStatusCode.NotModified);
             }
             return _room;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="myHome"></param>
+        /// <returns></returns>
+        private string FormatHomeData(Home myHome)
+        {
+            StringBuilder sb = new StringBuilder();
+            if (myHome != null)
+            {
+                myHome.Rooms.ForEach(r =>
+                {
+                    sb.Append(r.RoomID);
+                    sb.Append("^");
+                    r.Devices.ForEach(d =>
+                    {
+                        sb.Append(d.DeviceID);
+                        sb.Append("#");
+                        sb.Append(d.DeviceState);
+                        sb.Append(",");
+                    });
+                    sb.Remove(sb.Length - 1,1);
+                    sb.Append("@");
+                });
+                sb.Remove(sb.Length - 1, 1);
+            }
+            return sb.ToString();
         }
 
         /// <summary>
