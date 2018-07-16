@@ -16,8 +16,11 @@ namespace HomeAutomationAPI.Controllers
     {
         private static Home myHome = null;
         private static string ControlFileName = HttpContext.Current.Server.MapPath("../../AMHomeController.json");
-        
+        private static Dictionary<string, DateTime> heartbeat = new Dictionary<string, DateTime>();
 
+        /// <summary>
+        /// Default .Ctor
+        /// </summary>
         public HomeController()
         {
             try
@@ -33,13 +36,67 @@ namespace HomeAutomationAPI.Controllers
         }
 
         /// <summary>
+        /// Method to capture heartbeat from each room's controller. A missing heartbeat for more than 10 seconds/iterations should be used to disable web-control of the devices in that specific room, resulting in lesser network interactions for a dead controller.
+        /// </summary>
+        /// <param name="RoomName"></param>
+        [System.Web.Mvc.HttpPost]
+        public HttpResponseMessage SendHeartbeat([FromUri] string RoomName)
+        {
+            HttpResponseMessage response;
+            Room currentRoom = myHome.Rooms.Find(r => r.RoomID.Equals(RoomName, StringComparison.CurrentCultureIgnoreCase));
+            //If the room with the specific name really exists, update its heartbeat
+            if (currentRoom != null)
+            {
+                heartbeat[RoomName] = DateTime.Now;
+                response = Request.CreateResponse(HttpStatusCode.OK);
+            }
+            else
+            {
+                response = Request.CreateResponse(HttpStatusCode.NotAcceptable);
+            }
+            return response;
+        }
+
+        [System.Web.Mvc.HttpGet]
+        public int GetIsControllerAlive([FromUri] string RoomName)
+        {
+            Room currentRoom = myHome.Rooms.Find(r => r.RoomID.Equals(RoomName, StringComparison.CurrentCultureIgnoreCase));
+            //If the room with the specific name really exists, update its heartbeat
+            if (currentRoom != null)
+            {
+                //There is no record for the specified room
+                if (!heartbeat.ContainsKey(RoomName))
+                {
+                    return 0;
+                }
+                else
+                {
+                    DateTime lastSeen = heartbeat[RoomName];
+                    if (DateTime.Now.Subtract(lastSeen).Seconds > 15)
+                    {
+                        //Controller has not checked in in the last 15 seconds. Maybe down.
+                        return 0;
+                    }
+                    else
+                    {
+                        return 1;
+                    }
+                }
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
+        /// <summary>
         /// Gets current state of all devices for refreshing the UI
         /// </summary>
         /// <returns></returns>
         [System.Web.Mvc.HttpGet]
         public string GetAllDeviceStatus()
         {
-            
+
             string controlData = String.Empty;
             HttpResponseMessage response;
             try
@@ -67,14 +124,15 @@ namespace HomeAutomationAPI.Controllers
             {
                 Room _room = myHome.Rooms.Find(r => r.RoomID.Equals(RoomName, StringComparison.CurrentCultureIgnoreCase));
                 string deviceStatusString = String.Empty;
-                _room.Devices.ForEach(d => {
+                _room.Devices.ForEach(d =>
+                {
                     deviceStatusString += d.DeviceID + "=" + ((d.DeviceState == 1) ? "ON" : "OFF") + ",";
                 });
                 deviceStatus = deviceStatusString.TrimEnd(',');
             }
             catch (Exception exp)
             {
-
+                //Do something if required.
             }
             return deviceStatus;
         }

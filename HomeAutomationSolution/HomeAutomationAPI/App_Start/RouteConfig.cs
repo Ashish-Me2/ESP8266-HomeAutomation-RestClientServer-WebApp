@@ -13,6 +13,7 @@ namespace HomeAutomationAPI
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
             routes.IgnoreRoute("");
+            
 
             routes.MapRoute(
                 name: "Default",
