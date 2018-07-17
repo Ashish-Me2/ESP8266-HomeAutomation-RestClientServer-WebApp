@@ -89,29 +89,39 @@
         td {
             text-align: right;
         }
+
+        .dtm {
+            color: blueviolet;
+            font-weight: 700;
+        }
     </style>
     <script language="JavaScript">
         jQuery.support.cors = true;
+
+        //var targetURI = "http://homeautomationapi.azurewebsites.net";
+        var targetURI = "http://localhost/homeautomation";
+
         $(document).ready(GetDeviceStates());
         window.onerror = ErrorHandler;
         function ErrorHandler(obj) {
             //alert(obj);
         }
-        setInterval(GetDeviceStates, 2000);
+        setInterval(GetDeviceStates, 5000);
 
         function GetDeviceStates() {
             $.ajax(
                 {
                     type: "GET",
-                    url: 'http://localhost/homeautomation/api/home/GetAllDEviceStatus',
+                    url: targetURI + '/api/home/GetAllDeviceStatus',
                     data: "",
                     contentType: "application/json;",
                     dataType: "json",
                     success: function (data) {
                         ApplyDeviceStates(data);
                     },
-                    error: function (msg, url, line) {
-                        alert("Error");
+                    error: function (xhr, err) {
+                        alert("HTTP Status: " + xhr.status);
+                        alert("responseText: " + xhr.responseText);
                     }
                 });
         }
@@ -137,7 +147,7 @@
 
         function SetButtonState(rmNo, deviceName, devState) {
             var newState = "";
-            if (devState == "DISABLED") {
+            if (devState == "D") {
                 newState = "disabled";
             }
             else {
@@ -179,22 +189,24 @@
             var ctrl = document.getElementById(btn.id);
             var device = (btn.id.includes("B")) ? "Bulb" : (btn.id.includes("F")) ? "Fan" : "Tubelight";
             var rmNo = GetRoomNumberFromButton(btn.id);
-
+            var toggle = (ctrl.className.includes("pressed")) ? 0 : 1;
             if (btn.className == "button-disabled") {
-                alert("No heartbeat detected from the room controller. Cannot execute this command at the moment.");
+                alert("No heartbeat detected from the " + rmNo + " controller. Cannot execute this command at the moment.");
             }
             else {
                 $.ajax(
                     {
-                        type: "POST",
-                        url: 'http://localhost/homeautomation/api/home/GetUpdatedDeviceState?DeviceName=' + device + '&RoomName=' + rmNo + '&NewState=' + N,
+                        type: "GET",
+                        url: targetURI + '/api/home/GetUpdatedDeviceState?DeviceName=' + device + '&RoomName=' + rmNo + '&NewState=' + toggle,
                         data: "",
                         contentType: "application/json;",
                         dataType: "json",
                         success: function (data) {
+                            GetDeviceStates();
                         },
-                        error: function (msg, url, line) {
-                            alert("Error");
+                        error: function (xhr, err) {
+                            alert("HTTP Status: " + xhr.status);
+                            alert("responseText: " + xhr.responseText);
                         }
                     });
             }

@@ -66,6 +66,12 @@ namespace HomeAutomationAPI.Controllers
             return IsControllerAlive(RoomName);
         }
 
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="RoomName"></param>
+        /// <returns></returns>
         private int IsControllerAlive(string RoomName)
         {
             Room currentRoom = myHome.Rooms.Find(r => r.RoomID.Equals(RoomName, StringComparison.CurrentCultureIgnoreCase));
@@ -188,7 +194,7 @@ namespace HomeAutomationAPI.Controllers
                     {
                         sb.Append(d.DeviceID);
                         sb.Append("#");
-                        sb.Append(IsControllerAlive(r.RoomID) == 1 ? d.DeviceState.ToString() : "DISABLED");
+                        sb.Append(IsControllerAlive(r.RoomID) == 1 ? d.DeviceState.ToString() : "D");
                         sb.Append(",");
                     });
                     sb.Remove(sb.Length - 1,1);
