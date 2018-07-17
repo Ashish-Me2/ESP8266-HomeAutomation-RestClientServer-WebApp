@@ -95,12 +95,11 @@
         $(document).ready(GetDeviceStates());
         window.onerror = ErrorHandler;
         function ErrorHandler(obj) {
-            alert(obj);
+            //alert(obj);
         }
         setInterval(GetDeviceStates, 2000);
 
         function GetDeviceStates() {
-
             $.ajax(
                 {
                     type: "GET",
@@ -128,7 +127,6 @@
                 for (j = 0; j < DevArrData.length; j++) {
                     var deviceName = DevArrData[j].split('#')[0];
                     var deviceState = DevArrData[j].split('#')[1];
-                    //alert(RoomName + "." + deviceName + "." + deviceState);
                     SetButtonState(rowNum, deviceName, deviceState);
                 }
             }
@@ -147,13 +145,13 @@
             }
             switch (deviceName) {
                 case "Bulb":
-                    document.getElementById("B" + (rmNo - 1)).className = (devState == 0) ? null : "button-" + newState;
+                    document.getElementById("B" + (rmNo - 1)).className = (devState == 0) ? "" : "button-" + newState;
                     break;
                 case "Tubelight":
-                    document.getElementById("T" + (rmNo - 1)).className = (devState == 0) ? null : "button-" + newState;
+                    document.getElementById("T" + (rmNo - 1)).className = (devState == 0) ? "" : "button-" + newState;
                     break;
                 case "Fan":
-                    document.getElementById("F" + (rmNo - 1)).className = (devState == 0) ? null : "button-" + newState;
+                    document.getElementById("F" + (rmNo - 1)).className = (devState == 0) ? "" : "button-" + newState;
                     break;
             }
         }
@@ -169,6 +167,39 @@
             }
             return retVal;
         }
+
+
+        function GetRoomNumberFromButton(btnId) {
+            var roomNum = document.getElementById("rd").rows[parseInt(btnId.substring(1, btnId.length)) + 1].cells[0].innerText;
+            return roomNum;
+        }
+
+
+        function Click(btn) {
+            var ctrl = document.getElementById(btn.id);
+            var device = (btn.id.includes("B")) ? "Bulb" : (btn.id.includes("F")) ? "Fan" : "Tubelight";
+            var rmNo = GetRoomNumberFromButton(btn.id);
+
+            if (btn.className == "button-disabled") {
+                alert("No heartbeat detected from the room controller. Cannot execute this command at the moment.");
+            }
+            else {
+                $.ajax(
+                    {
+                        type: "POST",
+                        url: 'http://localhost/homeautomation/api/home/GetUpdatedDeviceState?DeviceName=' + device + '&RoomName=' + rmNo + '&NewState=' + N,
+                        data: "",
+                        contentType: "application/json;",
+                        dataType: "json",
+                        success: function (data) {
+                        },
+                        error: function (msg, url, line) {
+                            alert("Error");
+                        }
+                    });
+            }
+        }
+
     </script>
 </head>
 <body>
