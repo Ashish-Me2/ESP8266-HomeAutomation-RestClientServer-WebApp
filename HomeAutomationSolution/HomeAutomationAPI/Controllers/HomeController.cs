@@ -63,6 +63,11 @@ namespace HomeAutomationAPI.Controllers
         [System.Web.Mvc.HttpGet]
         public int GetIsControllerAlive([FromUri] string RoomName)
         {
+            return IsControllerAlive(RoomName);
+        }
+
+        private int IsControllerAlive(string RoomName)
+        {
             Room currentRoom = myHome.Rooms.Find(r => r.RoomID.Equals(RoomName, StringComparison.CurrentCultureIgnoreCase));
             //If the room with the specific name really exists, update its heartbeat
             if (currentRoom != null)
@@ -127,6 +132,8 @@ namespace HomeAutomationAPI.Controllers
             try
             {
                 Room _room = myHome.Rooms.Find(r => r.RoomID.Equals(RoomName, StringComparison.CurrentCultureIgnoreCase));
+                heartbeat[RoomName] = DateTime.Now;
+
                 string deviceStatusString = String.Empty;
                 _room.Devices.ForEach(d =>
                 {
@@ -181,7 +188,7 @@ namespace HomeAutomationAPI.Controllers
                     {
                         sb.Append(d.DeviceID);
                         sb.Append("#");
-                        sb.Append(d.DeviceState);
+                        sb.Append(IsControllerAlive(r.RoomID) == 1 ? d.DeviceState.ToString() : "DISABLED");
                         sb.Append(",");
                     });
                     sb.Remove(sb.Length - 1,1);

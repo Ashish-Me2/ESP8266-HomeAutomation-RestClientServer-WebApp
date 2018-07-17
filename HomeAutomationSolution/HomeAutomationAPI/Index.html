@@ -11,6 +11,36 @@
             font-size: 10pt;
         }
 
+        button {
+            height: 40px;
+            width: auto;
+            background-color: darkorange;
+            color: black;
+            font-weight: 700;
+            font-size: 10pt;
+            text-align: center;
+        }
+
+        .button-pressed {
+            height: 40px;
+            width: auto;
+            background-color: greenyellow;
+            color: black;
+            font-weight: 700;
+            font-size: 10pt;
+            text-align: center;
+        }
+
+        .button-disabled {
+            height: 40px;
+            width: auto;
+            background-color: aliceblue;
+            color: black;
+            font-weight: 700;
+            font-size: 10pt;
+            text-align: center;
+        }
+
         .home {
             color: black;
             font-weight: 700;
@@ -60,9 +90,16 @@
             text-align: right;
         }
     </style>
-    <script name="cboFastBikes">
+    <script language="JavaScript">
         jQuery.support.cors = true;
-        $(document).ready(function () {
+        $(document).ready(GetDeviceStates());
+        window.onerror = ErrorHandler;
+        function ErrorHandler(obj) {
+            alert(obj);
+        }
+        setInterval(GetDeviceStates, 2000);
+
+        function GetDeviceStates() {
 
             $.ajax(
                 {
@@ -78,25 +115,66 @@
                         alert("Error");
                     }
                 });
-        });
+        }
 
         function ApplyDeviceStates(roomDeviceData) {
             var roomArr = roomDeviceData.split('@');
             for (i = 0; i < roomArr.length; i++) {
                 var devArr = roomArr[i].split('^');
                 var RoomName = devArr[0];
-                var DevArrData = devArr[1].split('#');
+                var rowNum = GetTableRowForRoom(RoomName);
+
+                var DevArrData = devArr[1].split(',');
                 for (j = 0; j < DevArrData.length; j++) {
-                    alert(DevArrData[j]);
+                    var deviceName = DevArrData[j].split('#')[0];
+                    var deviceState = DevArrData[j].split('#')[1];
+                    //alert(RoomName + "." + deviceName + "." + deviceState);
+                    SetButtonState(rowNum, deviceName, deviceState);
                 }
             }
+            var d = new Date();
+            $(".dtm").text(d.getDate() + "/" + d.getMonth() + "/" + d.getFullYear() + " - " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds());
+        }
+
+
+        function SetButtonState(rmNo, deviceName, devState) {
+            var newState = "";
+            if (devState == "DISABLED") {
+                newState = "disabled";
+            }
+            else {
+                newState = "pressed";
+            }
+            switch (deviceName) {
+                case "Bulb":
+                    document.getElementById("B" + (rmNo - 1)).className = (devState == 0) ? null : "button-" + newState;
+                    break;
+                case "Tubelight":
+                    document.getElementById("T" + (rmNo - 1)).className = (devState == 0) ? null : "button-" + newState;
+                    break;
+                case "Fan":
+                    document.getElementById("F" + (rmNo - 1)).className = (devState == 0) ? null : "button-" + newState;
+                    break;
+            }
+        }
+
+        function GetTableRowForRoom(roomNameSpecific) {
+            retVal = 0;
+            var rowCount = document.getElementById("rd").rows.length;
+            for (k = 2; k < rowCount; k++) {
+                if ((document.getElementById("rd").rows[k].cells[0].innerText) == roomNameSpecific) {
+                    retVal = k;
+                    break;
+                }
+            }
+            return retVal;
         }
     </script>
 </head>
 <body>
-    <table style="border:solid;width:300px;">
+    <table id="rd" style="border:solid;width:300px;">
         <tr><td colspan="4" style="text-align:center"><span class="home">Ashish's Home</span></td></tr>
-        <tr><td colspan="4" style="text-align:center"><span class="home"><p id="dtm"></p></span></td></tr>
+        <tr><td colspan="4" style="text-align:center"><span class="dtm"></span></td></tr>
         <tr><td><span class="room">Drawing Room</span></td><td><span class="bulb"><button id="B1" onclick="Click(this);" type="button">Bulb</button></span></td><td><span class="tube"><button id="T1" onclick="Click(this);" type="button">Tubelight</button></span></td><td><span class="fan"><button id="F1" onclick="Click(this);" type="button">Fan</button></span></td></tr>
 
         <tr><td><span class="room">Living Room</span></td><td><span class="bulb"><button id="B2" onclick="Click(this);" type="button">Bulb</button></span></td><td><span class="tube"><button id="T2" onclick="Click(this);" type="button">Tubelight</button></span></td><td><span class="fan"><button id="F2" onclick="Click(this);" type="button">Fan</button></span></td></tr>
