@@ -4,6 +4,96 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.2" />
     <title>Home Automation Dashboard</title>
+    <style>
+        body {
+            font-family: Arial;
+            font-size: 10pt;
+        }
+
+        button {
+            height: 40px;
+            width: auto;
+            background-color: darkorange;
+            color: black;
+            font-weight: 700;
+            font-size: 10pt;
+            text-align: center;
+        }
+
+        .button-pressed {
+            height: 40px;
+            width: auto;
+            background-color: greenyellow;
+            color: black;
+            font-weight: 700;
+            font-size: 10pt;
+            text-align: center;
+        }
+
+        .button-disabled {
+            height: 40px;
+            width: auto;
+            background-color: aliceblue;
+            color: black;
+            font-weight: 700;
+            font-size: 10pt;
+            text-align: center;
+        }
+
+        .home {
+            color: black;
+            font-weight: 700;
+            font-size: 18pt;
+            margin: 4px 4px 4px 4px;
+        }
+
+        .room {
+            color: brown;
+            font-weight: 700;
+        }
+
+        .bulb {
+            color: goldenrod;
+            font-weight: 700;
+        }
+
+        .tube {
+            color: cornflowerblue;
+            font-weight: 700;
+        }
+
+        .fan {
+            color: darkgreen;
+            font-weight: 700;
+        }
+
+        .bulb-on {
+            background-color: khaki;
+            color: goldenrod;
+            font-weight: 700;
+        }
+
+        .tube-on {
+            background-color: cyan;
+            color: cornflowerblue;
+            font-weight: 700;
+        }
+
+        .fan-on {
+            background-color: aquamarine;
+            color: darkgreen;
+            font-weight: 700;
+        }
+
+        td {
+            text-align: right;
+        }
+
+        .dtm {
+            color: blueviolet;
+            font-weight: 700;
+        }
+    </style>
     <script src="Scripts/jquery-3.3.1.min.js"></script>
     <script language="JavaScript">
         jQuery.support.cors = true;
@@ -122,97 +212,8 @@
             }
         }
     </script>
-    <style>
-        body {
-            font-family: Arial;
-            font-size: 10pt;
-        }
 
-        button {
-            height: 40px;
-            width: auto;
-            background-color: darkorange;
-            color: black;
-            font-weight: 700;
-            font-size: 10pt;
-            text-align: center;
-        }
 
-        .button-pressed {
-            height: 40px;
-            width: auto;
-            background-color: greenyellow;
-            color: black;
-            font-weight: 700;
-            font-size: 10pt;
-            text-align: center;
-        }
-
-        .button-disabled {
-            height: 40px;
-            width: auto;
-            background-color: aliceblue;
-            color: black;
-            font-weight: 700;
-            font-size: 10pt;
-            text-align: center;
-        }
-
-        .home {
-            color: black;
-            font-weight: 700;
-            font-size: 18pt;
-            margin: 4px 4px 4px 4px;
-        }
-
-        .room {
-            color: brown;
-            font-weight: 700;
-        }
-
-        .bulb {
-            color: goldenrod;
-            font-weight: 700;
-        }
-
-        .tube {
-            color: cornflowerblue;
-            font-weight: 700;
-        }
-
-        .fan {
-            color: darkgreen;
-            font-weight: 700;
-        }
-
-        .bulb-on {
-            background-color: khaki;
-            color: goldenrod;
-            font-weight: 700;
-        }
-
-        .tube-on {
-            background-color: cyan;
-            color: cornflowerblue;
-            font-weight: 700;
-        }
-
-        .fan-on {
-            background-color: aquamarine;
-            color: darkgreen;
-            font-weight: 700;
-        }
-
-        td {
-            text-align: right;
-        }
-
-        .dtm {
-            color: blueviolet;
-            font-weight: 700;
-        }
-    </style>
-    
 </head>
 <body>
     <table id="rd" style="border:solid;width:300px;">
