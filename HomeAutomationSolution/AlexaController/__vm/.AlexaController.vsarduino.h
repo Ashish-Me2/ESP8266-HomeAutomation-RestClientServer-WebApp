@@ -112,6 +112,6 @@ typedef long __PTRDIFF_TYPE__;
 #define interrupts() sei()
 #define noInterrupts() cli()
 
-#include "ESPDeviceController.ino"
+#include "AlexaController.ino"
 #endif
 #endif

@@ -13,7 +13,7 @@ int reconnectDelay = 1000; //AM: Use this to implement a circuit breaker for no 
 int noDataCounter = 0;
 bool stopRetries = false;
 String AzureAPIUri = "http://homeautomationapi.azurewebsites.net/";
-uint8 const <button id="T1" onclick="Click(this);" type="button">Tubelight</button> = 0;
+uint8 const TUBELIGHT = 0;
 uint8 const BULB = 2;
 
 
