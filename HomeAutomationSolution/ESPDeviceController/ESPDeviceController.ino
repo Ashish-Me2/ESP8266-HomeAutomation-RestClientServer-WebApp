@@ -3,9 +3,6 @@
 #include <ESP8266WebServer.h>
 #include <ESP8266HTTPClient.h>
 
-//const char *ssid = "ASHISH-MATHUR"; 
-//const char *password = "sdl123456";
-
 const char *ssid = "ZOMBIE"; 
 const char *password = "CHANTI1-BANTI2";
 
@@ -39,7 +36,7 @@ void ControlGPIO(String stateString) {
 	String dev3Name = dev3Segment.substring(0, dev3Segment.indexOf("="));
 	String dev3State = dev3Segment.substring(dev3Segment.indexOf("=") + 1, dev3Segment.length());
 
-	digitalWrite(<button id="T1" onclick="Click(this);" type="button">Tubelight</button>, dev1State == "ON" ? HIGH : LOW);
+	digitalWrite(TUBELIGHT, dev1State == "ON" ? HIGH : LOW);
 	digitalWrite(BULB, dev3State == "ON" ? HIGH : LOW);
 }
 

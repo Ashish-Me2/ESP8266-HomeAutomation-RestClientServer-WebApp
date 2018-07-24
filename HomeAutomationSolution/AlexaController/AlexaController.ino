@@ -1,28 +1,19 @@
-/*
- Name:		AlexaController.ino
- Created:	7/19/2018 7:57:51 PM
- Author:	Ashish
-*/
 #include <Arduino.h>
+#ifdef ESP32
+#include <WiFi.h>
+#else
 #include <ESP8266WiFi.h>
+#endif
 #include "fauxmoESP.h"
-#include "ESPAsyncWebServer.h"
-#include <ESPAsyncTCP.h>
-#include <Hash.h>
 
-#define WIFI_SSID "your network name"
-#define WIFI_PASS "your password"
 #define SERIAL_BAUDRATE                 115200
+#define LED                             2
 
 fauxmoESP fauxmo;
-#define RELAY_PIN 13
-const int  buttonPin = 4;    // the pin that the pushbutton is attached to
-int buttonState = 0;         // current state of the button
-int lastButtonState = 0;     // previous state of the button
 
-							 // -----------------------------------------------------------------------------
-							 // Wifi
-							 // -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+// Wifi
+// -----------------------------------------------------------------------------
 
 void wifiSetup() {
 
@@ -30,8 +21,8 @@ void wifiSetup() {
 	WiFi.mode(WIFI_STA);
 
 	// Connect
-	Serial.printf("[WIFI] Connecting to %s ", WIFI_SSID);
-	WiFi.begin(WIFI_SSID, WIFI_PASS);
+	Serial.printf("[WIFI] Connecting to %s ", "ZOMBIE");
+	WiFi.begin("ZOMBIE", "CHANTI1-BANTI2");
 
 	// Wait
 	while (WiFi.status() != WL_CONNECTED) {
@@ -42,61 +33,68 @@ void wifiSetup() {
 
 	// Connected!
 	Serial.printf("[WIFI] STATION Mode, SSID: %s, IP address: %s\n", WiFi.SSID().c_str(), WiFi.localIP().toString().c_str());
-}
 
-void callback(uint8_t device_id, const char * device_name, bool state) {
-	Serial.print("Device "); Serial.print(device_name);
-	Serial.print(" state: ");
-	if (state) {
-		Serial.println("ON");
-		digitalWrite(RELAY_PIN, HIGH);
-	}
-	else {
-		Serial.println("OFF");
-		digitalWrite(RELAY_PIN, LOW);
-	}
 }
 
 void setup() {
-	pinMode(RELAY_PIN, OUTPUT);
-	pinMode(buttonPin, INPUT_PULLUP);
-	digitalWrite(RELAY_PIN, LOW);
+
 	// Init serial port and clean garbage
 	Serial.begin(SERIAL_BAUDRATE);
-	Serial.println("FauxMo demo sketch");
-	Serial.println("After connection, ask Alexa/Echo to 'turn <devicename> on' or 'off'");
+	Serial.println();
+	Serial.println();
 
 	// Wifi
 	wifiSetup();
 
-	// Fauxmo
-	fauxmo.addDevice("the light");
-	fauxmo.onMessage(callback);
+	// LED
+	pinMode(LED, OUTPUT);
+	digitalWrite(LED, HIGH);
+
+	// You have to call enable(true) once you have a WiFi connection
+	// You can enable or disable the library at any moment
+	// Disabling it will prevent the devices from being discovered and switched
+	fauxmo.enable(true);
+
+	// Add virtual devices
+	fauxmo.addDevice("switch one");
+	//fauxmo.addDevice("switch two"); // You can add more devices
+	//fauxmo.addDevice("switch three");
+	//fauxmo.addDevice("switch four");
+	//fauxmo.addDevice("switch five");
+	//fauxmo.addDevice("switch six");
+	//fauxmo.addDevice("switch seven");
+	//fauxmo.addDevice("switch eight");
+	//fauxmo.addDevice("switch nine");
+	//fauxmo.addDevice("switch ten");
+
+	// fauxmoESP 2.0.0 has changed the callback signature to add the device_id,
+	// this way it's easier to match devices to action without having to compare strings.
+	fauxmo.onSetState([](unsigned char device_id, const char * device_name, bool state) {
+		Serial.printf("[MAIN] Device #%d (%s) state: %s\n", device_id, device_name, state ? "ON" : "OFF");
+		digitalWrite(LED, !state);
+	});
+
+	// Callback to retrieve current state (for GetBinaryState queries)
+	fauxmo.onGetState([](unsigned char device_id, const char * device_name) {
+		return !digitalRead(LED);
+	});
+
 }
 
 void loop() {
+
+	// Since fauxmoESP 2.0 the library uses the "compatibility" mode by
+	// default, this means that it uses WiFiUdp class instead of AsyncUDP.
+	// The later requires the Arduino Core for ESP8266 staging version
+	// whilst the former works fine with current stable 2.3.0 version.
+	// But, since it's not "async" anymore we have to manually poll for UDP
+	// packets
 	fauxmo.handle();
 
-	// read the pushbutton input pin:
-	buttonState = digitalRead(buttonPin);
-
-	// compare the buttonState to its previous state
-	if (buttonState != lastButtonState) {
-		// if the state has changed, increment the counter
-		if (buttonState == LOW) {
-			Serial.println("on");
-			digitalWrite(RELAY_PIN, HIGH);
-		}
-		else {
-			// if the current state is LOW then the button
-			// went from on to off:
-			Serial.println("off");
-			digitalWrite(RELAY_PIN, LOW);
-		}
-		// Delay a little bit to avoid bouncing
-		delay(50);
+	static unsigned long last = millis();
+	if (millis() - last > 5000) {
+		last = millis();
+		Serial.printf("[MAIN] Free heap: %d bytes\n", ESP.getFreeHeap());
 	}
-	// save the current state as the last state,
-	//for next time through the loop
-	lastButtonState = buttonState;
+
 }
