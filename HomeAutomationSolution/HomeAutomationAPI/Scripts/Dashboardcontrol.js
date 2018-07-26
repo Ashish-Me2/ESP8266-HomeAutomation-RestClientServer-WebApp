@@ -92,7 +92,7 @@ function Click(btn) {
     var rmNo = GetRoomNumberFromButton(btn.id);
     var toggle = (ctrl.className.includes("pressed")) ? 0 : 1;
     if (btn.className == "button-disabled") {
-        alert("STOP: No heartbeat detected from the " + rmNo + " controller. Cannot execute this command at the moment.");
+        alert("No heartbeat detected from the " + rmNo + " controller. Cannot execute this command at the moment.");
     }
     else {
         $.ajax(
