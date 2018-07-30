@@ -41,11 +41,10 @@ void ControlGPIO(String stateString) {
 }
 
 void setup() {
+	delay(1000);
 	pinMode(0, OUTPUT); //TUBE CONTROL
 	pinMode(2, OUTPUT); //BULB CONTROL
-	digitalWrite(TUBELIGHT, LOW); //Set output level to LOW for bootup so that the device stays OFF
-	digitalWrite(BULB, LOW); //Set output level to LOW for bootup so that the device stays OFF
-	delay(500);
+	
 	Serial.begin(115200);
 	WiFi.mode(WIFI_OFF);        //Prevents reconnection issue (taking too long to connect)
 	delay(1000);
