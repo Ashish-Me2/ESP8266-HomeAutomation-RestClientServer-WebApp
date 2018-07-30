@@ -42,7 +42,7 @@ function ApplyDeviceStates(roomDeviceData) {
         }
     }
     var d = new Date();
-    $(".dtm").text(d.getDate() + "/" + d.getMonth() + "/" + d.getFullYear() + " - " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds());
+    $(".dtm").text(d.getDate() + "/" + (d.getMonth()+1) + "/" + d.getFullYear() + " - " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds());
 }
 
 
