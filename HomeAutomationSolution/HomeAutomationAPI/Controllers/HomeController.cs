@@ -45,6 +45,7 @@ namespace HomeAutomationAPI.Controllers
         [System.Web.Mvc.HttpPost]
         public HttpResponseMessage SendHeartbeat([FromUri] string RoomName)
         {
+            RoomName = RoomName.ToUpper();
             HttpResponseMessage response;
             Room currentRoom = myHome.Rooms.Find(r => r.RoomID.Equals(RoomName, StringComparison.CurrentCultureIgnoreCase));
             //If the room with the specific name really exists, update its heartbeat
@@ -63,6 +64,7 @@ namespace HomeAutomationAPI.Controllers
         [System.Web.Mvc.HttpGet]
         public int GetIsControllerAlive([FromUri] string RoomName)
         {
+            RoomName = RoomName.ToUpper();
             return IsControllerAlive(RoomName);
         }
 
@@ -74,6 +76,7 @@ namespace HomeAutomationAPI.Controllers
         /// <returns></returns>
         private int IsControllerAlive(string RoomName)
         {
+            RoomName = RoomName.ToUpper();
             Room currentRoom = myHome.Rooms.Find(r => r.RoomID.Equals(RoomName, StringComparison.CurrentCultureIgnoreCase));
             //If the room with the specific name really exists, update its heartbeat
             if (currentRoom != null)
@@ -134,6 +137,7 @@ namespace HomeAutomationAPI.Controllers
         [System.Web.Mvc.HttpGet]
         public string GetRoomDeviceStatus([FromUri] string RoomName)
         {
+            RoomName = RoomName.ToUpper();
             string deviceStatus = String.Empty;
             try
             {
@@ -157,6 +161,9 @@ namespace HomeAutomationAPI.Controllers
         [System.Web.Mvc.HttpGet]
         public Room GetUpdatedDeviceState([FromUri] string DeviceName, [FromUri] string RoomName, [FromUri] int NewState)
         {
+            RoomName = RoomName.ToUpper();
+            DeviceName = DeviceName.ToUpper();
+            
             HttpResponseMessage response = null;
             Room _room = null;
             try
@@ -245,6 +252,8 @@ namespace HomeAutomationAPI.Controllers
         /// <returns></returns>
         private Room AddorUpdateRoom(string OriginalRoomName, string NewRoomName = null)
         {
+            OriginalRoomName = OriginalRoomName.ToUpper();
+            NewRoomName = (!String.IsNullOrEmpty(NewRoomName)) ? NewRoomName.ToUpper() : null;
             Room _room;
             _room = myHome.Rooms.Find(r => r.RoomID.Equals(OriginalRoomName, StringComparison.CurrentCultureIgnoreCase));
             if (_room != null)
@@ -316,8 +325,8 @@ namespace HomeAutomationAPI.Controllers
             {
                 myHome.Rooms = new List<Room>();
             }
-            List<string> roomNames = new List<string> { "Drawing Room", "Living Room", "Kids' Room", "Master BedRoom", "Study Room", "Kitchen" };
-            List<string> deviceNames = new List<string> { "Tubelight", "Fan", "Bulb" };
+            List<string> roomNames = new List<string> { "DRAWING ROOM", "LIVING ROOM", "KIDS' ROOM", "MASTER BEDROOM", "STUDY ROOM", "KITCHEN" };
+            List<string> deviceNames = new List<string> { "TUBELIGHT", "FAN", "BULB" };
 
             List<Device> _devices = new List<Device>();
             deviceNames.ForEach(d =>

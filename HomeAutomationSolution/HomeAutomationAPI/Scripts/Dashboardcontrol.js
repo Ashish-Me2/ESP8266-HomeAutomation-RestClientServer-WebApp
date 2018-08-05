@@ -88,7 +88,7 @@ function GetRoomNumberFromButton(btnId) {
 
 function Click(btn) {
     var ctrl = document.getElementById(btn.id);
-    var device = (btn.id.includes("B")) ? "Bulb" : (btn.id.includes("F")) ? "Fan" : "Tubelight";
+    var device = (btn.id.includes("B")) ? "BULB" : (btn.id.includes("F")) ? "FAN" : "TUBELIGHT";
     var rmNo = GetRoomNumberFromButton(btn.id);
     var toggle = (ctrl.className.includes("pressed")) ? 0 : 1;
     if (btn.className == "button-disabled") {
