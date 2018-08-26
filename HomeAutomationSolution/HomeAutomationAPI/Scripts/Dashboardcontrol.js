@@ -22,7 +22,7 @@ function GetDeviceStates() {
             },
             error: function (xhr, err) {
                 //alert("HTTP Status: " + xhr.status);
-                //alert("responseText: " + xhr.responseText);
+                //alert("Response: " + xhr.responseText);
             }
         });
 }
@@ -33,7 +33,7 @@ function ApplyDeviceStates(roomDeviceData) {
         var devArr = roomArr[i].split('^');
         var RoomName = devArr[0];
         var rowNum = GetTableRowForRoom(RoomName);
-
+        
         var DevArrData = devArr[1].split(',');
         for (j = 0; j < DevArrData.length; j++) {
             var deviceName = DevArrData[j].split('#')[0];
@@ -47,6 +47,7 @@ function ApplyDeviceStates(roomDeviceData) {
 
 
 function SetButtonState(rmNo, deviceName, devState) {
+    
     var newState = "";
     if (devState == "D") {
         newState = "disabled";
@@ -54,14 +55,14 @@ function SetButtonState(rmNo, deviceName, devState) {
     else {
         newState = "pressed";
     }
-    switch (deviceName) {
-        case "Bulb":
+    switch (deviceName.toUpperCase()) {
+        case "BULB":
             document.getElementById("B" + (rmNo - 1)).className = (devState == 0) ? "" : "button-" + newState;
             break;
-        case "Tubelight":
+        case "TUBELIGHT":
             document.getElementById("T" + (rmNo - 1)).className = (devState == 0) ? "" : "button-" + newState;
             break;
-        case "Fan":
+        case "FAN":
             document.getElementById("F" + (rmNo - 1)).className = (devState == 0) ? "" : "button-" + newState;
             break;
     }
@@ -71,7 +72,7 @@ function GetTableRowForRoom(roomNameSpecific) {
     retVal = 0;
     var rowCount = document.getElementById("rd").rows.length;
     for (k = 2; k < rowCount; k++) {
-        if ((document.getElementById("rd").rows[k].cells[0].innerText) == roomNameSpecific) {
+        if ((document.getElementById("rd").rows[k].cells[0].innerText.toUpperCase()) == roomNameSpecific.toUpperCase()) {
             retVal = k;
             break;
         }
