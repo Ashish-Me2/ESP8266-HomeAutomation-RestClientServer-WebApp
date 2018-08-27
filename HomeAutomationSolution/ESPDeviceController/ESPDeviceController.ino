@@ -40,26 +40,20 @@ void ControlGPIO(String stateString) {
 	digitalWrite(BULB, dev3State == "ON" ? HIGH : LOW);
 }
 
-void setup() {
-	pinMode(0, OUTPUT); //TUBE CONTROL
-	pinMode(2, OUTPUT); //BULB CONTROL
-	digitalWrite(TUBELIGHT, LOW); //Set output level to LOW for bootup so that the device stays OFF
-	digitalWrite(BULB, LOW); //Set output level to LOW for bootup so that the device stays OFF
-	delay(500);
-	Serial.begin(115200);
+void ConnectWifi() {
 	WiFi.mode(WIFI_OFF);        //Prevents reconnection issue (taking too long to connect)
 	delay(1000);
-	WiFi.mode(WIFI_STA);        
+	WiFi.mode(WIFI_STA);
+	WiFi.begin(ssid, password);
+	while (WiFi.status() != WL_CONNECTED) {
+		delay(500);
+	}
+	//Serial.begin(115200);
 	//Serial.print("Device MAC address: ");
 	//Serial.println(WiFi.macAddress());  //MAC address of ESP
-	WiFi.begin(ssid, password);
 	//Serial.println("");
 	//Serial.print("Connecting");
 	// Wait for connection
-	while (WiFi.status() != WL_CONNECTED) {
-		delay(500);
-		Serial.print(".");
-	}
 
 	//If connection successful show IP address in serial monitor
 	//Serial.println("");
@@ -69,7 +63,20 @@ void setup() {
 	//Serial.println(WiFi.localIP());  //IP address assigned to ESP
 }
 
+void setup() {
+	pinMode(0, OUTPUT); //TUBE CONTROL
+	pinMode(2, OUTPUT); //BULB CONTROL
+	digitalWrite(TUBELIGHT, LOW); //Set output level to LOW for bootup so that the device stays OFF
+	digitalWrite(BULB, LOW); //Set output level to LOW for bootup so that the device stays OFF
+	delay(500);
+	ConnectWifi();
+}
+
 void loop() {
+	if (WiFi.status() != WL_CONNECTED) {
+		ConnectWifi();
+	}
+	
 	HTTPClient http;
 	String Link;
 	String roomName = "Living%20Room";
@@ -81,9 +88,9 @@ void loop() {
 	//----------------------------------------------------------------------------------------------------
 	if (noDataCounter > 15) {
 		if (!stopRetries) {
-			Serial.println("**************************************");
-			Serial.println("I'm tired of retrying. Please fix the server side and reset the processor (ESP) before trying again. No more automatic retries. Zzzzz");
-			Serial.println("**************************************");
+			//Serial.println("**************************************");
+			//Serial.println("I'm tired of retrying. Please fix the server side and reset the processor (ESP) before trying again. No more automatic retries. Zzzzz");
+			//Serial.println("**************************************");
 			stopRetries = true;
 		}
 		return;
@@ -99,17 +106,17 @@ void loop() {
 		//Serial.print("HTTP Status Code: ");
 		//Serial.println(httpCode);
 		//Serial.print("HTTP Response Payload: ");
-		Serial.println(payload);
+		//Serial.println(payload);
 		http.end();
 		String trimmedPayload = payload.substring(1,payload.length()-1);
 		ControlGPIO(trimmedPayload);
 		delay(reconnectDelay);
 	}
 	else {
-		Serial.println("-----------------------------------");
-		Serial.print("No connection to server. Waiting for: ");
-		Serial.print(reconnectDelay/1000);
-		Serial.println(" seconds before re-trying...");
+		//Serial.println("-----------------------------------");
+		//Serial.print("No connection to server. Waiting for: ");
+		//Serial.print(reconnectDelay/1000);
+		//Serial.println(" seconds before re-trying...");
 		noDataCounter++;
 		reconnectDelay = reconnectDelay * 2;
 		delay(reconnectDelay);
