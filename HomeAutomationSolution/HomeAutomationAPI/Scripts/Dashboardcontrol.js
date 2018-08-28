@@ -1,5 +1,5 @@
 ﻿jQuery.support.cors = true;
-var targetURI = "http://homeautomationapi.azurewebsites.net";
+var targetURI = "https://homeautomationapi.azurewebsites.net";
 //var targetURI = "http://localhost/homeautomation";
 
 $(document).ready(GetDeviceStates());
