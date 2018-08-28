@@ -9,7 +9,7 @@ const char *password = "CHANTI1-BANTI2";
 int reconnectDelay = 1000; //AM: Use this to implement a circuit breaker for no connectivity to Wifi or the HTTP endpoint
 int noDataCounter = 0;
 bool stopRetries = false;
-String AzureAPIUri = "http://homeautomationapi.azurewebsites.net/";
+String AzureAPIUri = "https://homeautomationapi.azurewebsites.net/";
 uint8 const TUBELIGHT = 0;
 uint8 const BULB = 2;
 
