@@ -5,7 +5,7 @@ var targetURI = "https://homeautomationapi.azurewebsites.net";
 $(document).ready(GetDeviceStates());
 window.onerror = ErrorHandler;
 function ErrorHandler(obj) {
-    alert(obj);
+    alert("The app encountered an error!");
 }
 setInterval(GetDeviceStates, 5000);
 
@@ -21,8 +21,8 @@ function GetDeviceStates() {
                 ApplyDeviceStates(data);
             },
             error: function (xhr, err) {
-                //alert("HTTP Status: " + xhr.status);
-                //alert("Response: " + xhr.responseText);
+                alert("HTTP Status: " + xhr.status);
+                alert("Response: " + xhr.responseText);
             }
         });
 }
@@ -33,7 +33,6 @@ function ApplyDeviceStates(roomDeviceData) {
         var devArr = roomArr[i].split('^');
         var RoomName = devArr[0];
         var rowNum = GetTableRowForRoom(RoomName);
-        
         var DevArrData = devArr[1].split(',');
         for (j = 0; j < DevArrData.length; j++) {
             var deviceName = DevArrData[j].split('#')[0];
@@ -41,20 +40,21 @@ function ApplyDeviceStates(roomDeviceData) {
             SetButtonState(rowNum, deviceName, deviceState);
         }
     }
+
     var d = new Date();
-    $(".dtm").text(d.getDate() + "/" + (d.getMonth()+1) + "/" + d.getFullYear() + " - " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds());
+    $(".dtm").text(d.getDate() + "/" + (d.getMonth() + 1) + "/" + d.getFullYear() + " - " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds());
 }
 
 
 function SetButtonState(rmNo, deviceName, devState) {
-    
     var newState = "";
-    if (devState == "D") {
+    if (devState === "D") {
         newState = "disabled";
     }
     else {
         newState = "pressed";
     }
+
     switch (deviceName.toUpperCase()) {
         case "BULB":
             document.getElementById("B" + (rmNo - 1)).className = (devState == 0) ? "" : "button-" + newState;
@@ -66,13 +66,16 @@ function SetButtonState(rmNo, deviceName, devState) {
             document.getElementById("F" + (rmNo - 1)).className = (devState == 0) ? "" : "button-" + newState;
             break;
     }
+
 }
 
 function GetTableRowForRoom(roomNameSpecific) {
     retVal = 0;
     var rowCount = document.getElementById("rd").rows.length;
+
     for (k = 2; k < rowCount; k++) {
-        if ((document.getElementById("rd").rows[k].cells[0].innerText.toUpperCase()) == roomNameSpecific.toUpperCase()) {
+        var roomName = $.trim(document.getElementById("rd").rows[k].cells[0].innerText.toUpperCase());
+        if (roomName === roomNameSpecific.toUpperCase()) {
             retVal = k;
             break;
         }
@@ -92,7 +95,7 @@ function Click(btn) {
     var device = (btn.id.includes("B")) ? "BULB" : (btn.id.includes("F")) ? "FAN" : "TUBELIGHT";
     var rmNo = GetRoomNumberFromButton(btn.id);
     var toggle = (ctrl.className.includes("pressed")) ? 0 : 1;
-    if (btn.className == "button-disabled") {
+    if (btn.className === "button-disabled") {
         alert("No heartbeat detected from the " + rmNo + " controller. Cannot execute this command at the moment.");
     }
     else {
@@ -107,8 +110,8 @@ function Click(btn) {
                     GetDeviceStates();
                 },
                 error: function (xhr, err) {
-                    //alert("HTTP Status: " + xhr.status);
-                    //alert("responseText: " + xhr.responseText);
+                    alert("HTTP Status: " + xhr.status);
+                    alert("responseText: " + xhr.responseText);
                 }
             });
     }
