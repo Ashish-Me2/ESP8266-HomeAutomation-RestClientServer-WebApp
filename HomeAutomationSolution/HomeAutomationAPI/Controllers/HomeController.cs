@@ -15,6 +15,7 @@ using System.Web.Mvc;
 namespace HomeAutomationAPI.Controllers
 {
     [EnableCors(origins: "*", headers: "*", methods: "*")]
+    //Main worker
     public class HomeController : ApiController
     {
         private static Home myHome = null;
