@@ -11,6 +11,7 @@ namespace HomeAutomationAPI.Controllers
         // GET: Dashboard
         public ActionResult Index()
         {
+            //TODO
             return View();
         }
     }
